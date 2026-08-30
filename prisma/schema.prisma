@@ -1,0 +1,38 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Price {
+  id           String   @id @default(uuid())
+  itemName     String
+  category     String
+  unitPrice    Float
+  lastUpdated  DateTime @default(now()) @updatedAt
+  vehicleModel String?
+  vehicleYear  String?
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  customerName  String
+  invoiceDate   DateTime
+  dueDate       DateTime
+  rcNo          String?
+  tin           String?
+  quoteNumber   String?
+  vehicleModel  String?
+  vehicleYear   String?
+  regNumber     String?
+  validity      String?
+  paymentTerms  String?
+  salesRep      String?
+  taxRate       Float    @default(0)
+  items         Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
