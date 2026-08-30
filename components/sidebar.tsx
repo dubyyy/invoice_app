@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, Tag, Receipt, History } from 'lucide-react';
+import { FileText, Tag, Receipt, History, FolderClosed } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'Create Invoice', icon: FileText },
   { href: '/prices', label: 'Prices', icon: Tag },
   { href: '/history', label: 'History', icon: History },
+  { href: '/drafts', label: 'Drafts', icon: FolderClosed },
 ];
 
 export function Sidebar() {

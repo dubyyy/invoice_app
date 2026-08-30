@@ -13,6 +13,7 @@ import {
   Upload,
   FileUp,
   X,
+  Save,
 } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 import jsPDF from 'jspdf';
@@ -89,6 +90,7 @@ export default function CreateInvoicePage() {
   const [taxRate, setTaxRate] = React.useState(7.5);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [creating, setCreating] = React.useState(false);
+  const [currentDraftKey, setCurrentDraftKey] = React.useState<string | null>(null);
 
   // Custom FGC Autos fields
   const [rcNo, setRcNo] = React.useState('9346106');
@@ -225,6 +227,137 @@ export default function CreateInvoicePage() {
       });
       window.print();
     }, 300);
+  };
+
+  // ---- Draft Save & Restore Handlers ----
+
+  React.useEffect(() => {
+    // 1. Check if we were redirected from drafts list with a specific draft to load
+    const trigger = localStorage.getItem('fgc_load_draft_trigger');
+    if (trigger) {
+      try {
+        const parsed = JSON.parse(trigger);
+        setCustomerName(parsed.customerName || '');
+        if (parsed.invoiceDate) setInvoiceDate(parsed.invoiceDate);
+        if (parsed.dueDate) setDueDate(parsed.dueDate);
+        if (parsed.items) setItems(parsed.items);
+        setRcNo(parsed.rcNo || '9346106');
+        setTin(parsed.tin || '2622427985709');
+        setQuoteNumber(parsed.quoteNumber || '');
+        setVehicleModel(parsed.vehicleModel || '');
+        setVehicleYear(parsed.vehicleYear || '');
+        setRegNumber(parsed.regNumber || '');
+        setValidity(parsed.validity || '2 Days');
+        setPaymentTerms(parsed.paymentTerms || '1 Month');
+        setSalesRep(parsed.salesRep || '');
+        setTaxRate(parsed.taxRate ?? 7.5);
+        setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
+        localStorage.removeItem('fgc_load_draft_trigger');
+        toast.success('Draft loaded successfully!');
+        return; // Skip checking general unsaved drafts
+      } catch (err) {
+        console.error('Failed to parse load draft trigger:', err);
+      }
+    }
+
+    // 2. Otherwise check for general unsaved drafts
+    const saved = localStorage.getItem('fgc_invoice_draft');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        toast('Unsaved draft found', {
+          description: `From ${new Date(parsed.savedAt).toLocaleString()}`,
+          action: {
+            label: 'Restore',
+            onClick: () => {
+              setCustomerName(parsed.customerName || '');
+              if (parsed.invoiceDate) setInvoiceDate(parsed.invoiceDate);
+              if (parsed.dueDate) setDueDate(parsed.dueDate);
+              if (parsed.items) setItems(parsed.items);
+              setRcNo(parsed.rcNo || '9346106');
+              setTin(parsed.tin || '2622427985709');
+              setQuoteNumber(parsed.quoteNumber || '');
+              setVehicleModel(parsed.vehicleModel || '');
+              setVehicleYear(parsed.vehicleYear || '');
+              setRegNumber(parsed.regNumber || '');
+              setValidity(parsed.validity || '2 Days');
+              setPaymentTerms(parsed.paymentTerms || '1 Month');
+              setSalesRep(parsed.salesRep || '');
+              setTaxRate(parsed.taxRate ?? 7.5);
+              setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
+              if (parsed.attachedPdfName) {
+                toast.info(`Please re-upload your PDF file "${parsed.attachedPdfName}" if needed.`);
+              }
+              toast.success('Draft restored!');
+            },
+          },
+          cancel: {
+            label: 'Dismiss',
+            onClick: () => {
+              localStorage.removeItem('fgc_invoice_draft');
+              toast.info('Draft discarded.');
+            },
+          },
+          duration: 10000,
+        });
+      } catch (err) {
+        console.error('Failed to parse invoice draft:', err);
+      }
+    }
+  }, []);
+
+  const saveDraft = () => {
+    try {
+      const keyToUse = currentDraftKey || `fgc_invoice_draft_${Date.now()}`;
+      const draftData = {
+        localStorageKey: keyToUse,
+        customerName,
+        invoiceDate,
+        dueDate,
+        rcNo,
+        tin,
+        quoteNumber,
+        vehicleModel,
+        vehicleYear,
+        regNumber,
+        validity,
+        paymentTerms,
+        salesRep,
+        taxRate,
+        items,
+        attachedPdfName: attachedPdf ? attachedPdf.name : null,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(keyToUse, JSON.stringify(draftData));
+      setCurrentDraftKey(keyToUse);
+      toast.success('Draft saved successfully!', {
+        description: `Saved at ${new Date().toLocaleTimeString()}`,
+      });
+    } catch (err) {
+      console.error('Failed to save draft:', err);
+      toast.error('Failed to save draft to local storage.');
+    }
+  };
+
+  const clearForm = () => {
+    setCustomerName('');
+    setInvoiceDate(todayInput());
+    setDueDate(addDaysInput(30));
+    setItems([emptyItem()]);
+    setRcNo('9346106');
+    setTin('2622427985709');
+    setQuoteNumber('');
+    setVehicleModel('');
+    setVehicleYear('');
+    setRegNumber('');
+    setValidity('2 Days');
+    setPaymentTerms('1 Month');
+    setSalesRep('');
+    setTaxRate(7.5);
+    setAttachedPdf(null);
+    setErrors({});
+    setCurrentDraftKey(null);
+    toast.success('Form cleared!');
   };
 
   // ---- PDF attachment handlers ----
@@ -850,31 +983,52 @@ export default function CreateInvoicePage() {
         </Card>
 
         {/* Save/Print/Download Actions */}
-        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-3">
           <Button
             type="button"
-            variant="outline"
-            onClick={handleDownloadCombinedPdf}
-            disabled={merging}
-            className="gap-2"
-            size="lg"
+            variant="ghost"
+            onClick={clearForm}
+            className="text-muted-foreground hover:text-foreground text-sm"
           >
-            <FileUp className="h-5 w-5" />
-            {merging
-              ? 'Generating…'
-              : attachedPdf
-                ? 'Download Combined PDF'
-                : 'Download Invoice PDF'}
+            Clear Form
           </Button>
-          <Button
-            onClick={handleCreateInvoice}
-            disabled={creating}
-            className="bg-rose-600 hover:bg-rose-700 text-white px-8 gap-2"
-            size="lg"
-          >
-            <Printer className="h-5 w-5" />
-            {creating ? 'Creating…' : 'Create Invoice'}
-          </Button>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={saveDraft}
+              className="gap-2 border-dashed border-rose-200 text-rose-700 hover:bg-rose-50"
+              size="lg"
+            >
+              <Save className="h-5 w-5" />
+              Save Draft
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDownloadCombinedPdf}
+              disabled={merging}
+              className="gap-2"
+              size="lg"
+            >
+              <FileUp className="h-5 w-5" />
+              {merging
+                ? 'Generating…'
+                : attachedPdf
+                  ? 'Download Combined PDF'
+                  : 'Download Invoice PDF'}
+            </Button>
+            <Button
+              onClick={handleCreateInvoice}
+              disabled={creating}
+              className="bg-rose-600 hover:bg-rose-700 text-white px-8 gap-2"
+              size="lg"
+            >
+              <Printer className="h-5 w-5" />
+              {creating ? 'Creating…' : 'Create Invoice'}
+            </Button>
+          </div>
         </div>
       </div>
 
