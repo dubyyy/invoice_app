@@ -47,6 +47,8 @@ const FGC_AUTOS_TEMPLATE = {
   validity: '2 Days',
   paymentTerms: '1 Month',
   salesRep: 'ANDREW',
+  driverNumber: '',
+  branch: '',
   taxRate: 7.5,
   items: [
     { id: 't1', description: 'SHOCK ABSORBVER COMPLET SHOCKS AND PADS', quantity: 2, unitPrice: 175000 },
@@ -102,6 +104,8 @@ export default function CreateInvoicePage() {
   const [validity, setValidity] = React.useState('2 Days');
   const [paymentTerms, setPaymentTerms] = React.useState('1 Month');
   const [salesRep, setSalesRep] = React.useState('ANDREW');
+  const [driverNumber, setDriverNumber] = React.useState('');
+  const [branch, setBranch] = React.useState('');
 
   // ---- PDF attachment / merge state ----
   const [attachedPdf, setAttachedPdf] = React.useState<File | null>(null);
@@ -159,6 +163,8 @@ export default function CreateInvoicePage() {
     setValidity(FGC_AUTOS_TEMPLATE.validity);
     setPaymentTerms(FGC_AUTOS_TEMPLATE.paymentTerms);
     setSalesRep(FGC_AUTOS_TEMPLATE.salesRep);
+    setDriverNumber(FGC_AUTOS_TEMPLATE.driverNumber || '');
+    setBranch(FGC_AUTOS_TEMPLATE.branch || '');
     setTaxRate(FGC_AUTOS_TEMPLATE.taxRate);
     setItems(FGC_AUTOS_TEMPLATE.items);
     toast.success('FGC Autos template loaded!');
@@ -196,6 +202,8 @@ export default function CreateInvoicePage() {
           validity,
           paymentTerms,
           salesRep,
+          driverNumber,
+          branch,
           taxRate,
           items: items.map((it) => ({
             id: it.id,
@@ -250,6 +258,8 @@ export default function CreateInvoicePage() {
         setValidity(parsed.validity || '2 Days');
         setPaymentTerms(parsed.paymentTerms || '1 Month');
         setSalesRep(parsed.salesRep || '');
+        setDriverNumber(parsed.driverNumber || '');
+        setBranch(parsed.branch || '');
         setTaxRate(parsed.taxRate ?? 7.5);
         setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
         localStorage.removeItem('fgc_load_draft_trigger');
@@ -283,6 +293,8 @@ export default function CreateInvoicePage() {
               setValidity(parsed.validity || '2 Days');
               setPaymentTerms(parsed.paymentTerms || '1 Month');
               setSalesRep(parsed.salesRep || '');
+              setDriverNumber(parsed.driverNumber || '');
+              setBranch(parsed.branch || '');
               setTaxRate(parsed.taxRate ?? 7.5);
               setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
               if (parsed.attachedPdfName) {
@@ -323,6 +335,8 @@ export default function CreateInvoicePage() {
         validity,
         paymentTerms,
         salesRep,
+        driverNumber,
+        branch,
         taxRate,
         items,
         attachedPdfName: attachedPdf ? attachedPdf.name : null,
@@ -353,6 +367,8 @@ export default function CreateInvoicePage() {
     setValidity('2 Days');
     setPaymentTerms('1 Month');
     setSalesRep('');
+    setDriverNumber('');
+    setBranch('');
     setTaxRate(7.5);
     setAttachedPdf(null);
     setErrors({});
@@ -727,6 +743,24 @@ export default function CreateInvoicePage() {
                 placeholder="e.g. 2622427985709"
                 value={tin}
                 disabled
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="driverNumber">Driver Number</Label>
+              <Input
+                id="driverNumber"
+                placeholder="e.g. 08012345678"
+                value={driverNumber}
+                onChange={(e) => setDriverNumber(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="branch">Branch</Label>
+              <Input
+                id="branch"
+                placeholder="e.g. Lagos Branch"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
               />
             </div>
           </div>
@@ -1125,6 +1159,18 @@ export default function CreateInvoicePage() {
                   <td className="py-0.5 pr-2 text-gray-500">Sales Rep</td>
                   <td className="py-0.5 font-semibold text-[#1a1a1a]">{salesRep.toUpperCase()}</td>
                 </tr>
+                {driverNumber && (
+                  <tr>
+                    <td className="py-0.5 pr-2 text-gray-500">Driver Number</td>
+                    <td className="py-0.5 font-semibold text-[#1a1a1a]">{driverNumber.toUpperCase()}</td>
+                  </tr>
+                )}
+                {branch && (
+                  <tr>
+                    <td className="py-0.5 pr-2 text-gray-500">Branch</td>
+                    <td className="py-0.5 font-semibold text-[#1a1a1a]">{branch.toUpperCase()}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -31,6 +31,8 @@ export interface Invoice {
   validity: string;
   paymentTerms: string;
   salesRep: string;
+  driverNumber?: string;
+  branch?: string;
   taxRate: number;
   items: LineItem[];
   createdAt: string;

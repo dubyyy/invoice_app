@@ -31,6 +31,8 @@ export async function POST(request: Request) {
       validity,
       paymentTerms,
       salesRep,
+      driverNumber,
+      branch,
       taxRate,
       items,
     } = body;
@@ -53,6 +55,8 @@ export async function POST(request: Request) {
         validity: validity || '',
         paymentTerms: paymentTerms || '',
         salesRep: salesRep || '',
+        driverNumber: driverNumber || '',
+        branch: branch || '',
         taxRate: parseFloat(taxRate) || 0,
         items,
       },

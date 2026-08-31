@@ -31,6 +31,8 @@ model Invoice {
   validity      String?
   paymentTerms  String?
   salesRep      String?
+  driverNumber  String?
+  branch        String?
   taxRate       Float    @default(0)
   items         Json
   createdAt     DateTime @default(now())
