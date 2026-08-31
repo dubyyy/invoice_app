@@ -49,6 +49,7 @@ const FGC_AUTOS_TEMPLATE = {
   salesRep: 'ANDREW',
   driverNumber: '',
   branch: '',
+  unit: '',
   taxRate: 7.5,
   items: [
     { id: 't1', description: 'SHOCK ABSORBVER COMPLET SHOCKS AND PADS', quantity: 2, unitPrice: 175000 },
@@ -106,6 +107,7 @@ export default function CreateInvoicePage() {
   const [salesRep, setSalesRep] = React.useState('ANDREW');
   const [driverNumber, setDriverNumber] = React.useState('');
   const [branch, setBranch] = React.useState('');
+  const [unit, setUnit] = React.useState('');
 
   // ---- PDF attachment / merge state ----
   const [attachedPdf, setAttachedPdf] = React.useState<File | null>(null);
@@ -165,6 +167,7 @@ export default function CreateInvoicePage() {
     setSalesRep(FGC_AUTOS_TEMPLATE.salesRep);
     setDriverNumber(FGC_AUTOS_TEMPLATE.driverNumber || '');
     setBranch(FGC_AUTOS_TEMPLATE.branch || '');
+    setUnit(FGC_AUTOS_TEMPLATE.unit || '');
     setTaxRate(FGC_AUTOS_TEMPLATE.taxRate);
     setItems(FGC_AUTOS_TEMPLATE.items);
     toast.success('FGC Autos template loaded!');
@@ -204,6 +207,7 @@ export default function CreateInvoicePage() {
           salesRep,
           driverNumber,
           branch,
+          unit,
           taxRate,
           items: items.map((it) => ({
             id: it.id,
@@ -260,6 +264,7 @@ export default function CreateInvoicePage() {
         setSalesRep(parsed.salesRep || '');
         setDriverNumber(parsed.driverNumber || '');
         setBranch(parsed.branch || '');
+        setUnit(parsed.unit || '');
         setTaxRate(parsed.taxRate ?? 7.5);
         setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
         localStorage.removeItem('fgc_load_draft_trigger');
@@ -295,6 +300,7 @@ export default function CreateInvoicePage() {
               setSalesRep(parsed.salesRep || '');
               setDriverNumber(parsed.driverNumber || '');
               setBranch(parsed.branch || '');
+              setUnit(parsed.unit || '');
               setTaxRate(parsed.taxRate ?? 7.5);
               setCurrentDraftKey(parsed.localStorageKey || 'fgc_invoice_draft');
               if (parsed.attachedPdfName) {
@@ -337,6 +343,7 @@ export default function CreateInvoicePage() {
         salesRep,
         driverNumber,
         branch,
+        unit,
         taxRate,
         items,
         attachedPdfName: attachedPdf ? attachedPdf.name : null,
@@ -369,6 +376,7 @@ export default function CreateInvoicePage() {
     setSalesRep('');
     setDriverNumber('');
     setBranch('');
+    setUnit('');
     setTaxRate(7.5);
     setAttachedPdf(null);
     setErrors({});
@@ -761,6 +769,15 @@ export default function CreateInvoicePage() {
                 placeholder="e.g. Lagos Branch"
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="unit">Unit</Label>
+              <Input
+                id="unit"
+                placeholder="e.g. Unit 1"
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
               />
             </div>
           </div>
@@ -1169,6 +1186,12 @@ export default function CreateInvoicePage() {
                   <tr>
                     <td className="py-0.5 pr-2 text-gray-500">Branch</td>
                     <td className="py-0.5 font-semibold text-[#1a1a1a]">{branch.toUpperCase()}</td>
+                  </tr>
+                )}
+                {unit && (
+                  <tr>
+                    <td className="py-0.5 pr-2 text-gray-500">Unit</td>
+                    <td className="py-0.5 font-semibold text-[#1a1a1a]">{unit.toUpperCase()}</td>
                   </tr>
                 )}
               </tbody>

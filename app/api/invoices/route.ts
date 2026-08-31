@@ -33,6 +33,7 @@ export async function POST(request: Request) {
       salesRep,
       driverNumber,
       branch,
+      unit,
       taxRate,
       items,
     } = body;
@@ -57,6 +58,7 @@ export async function POST(request: Request) {
         salesRep: salesRep || '',
         driverNumber: driverNumber || '',
         branch: branch || '',
+        unit: unit || '',
         taxRate: parseFloat(taxRate) || 0,
         items,
       },

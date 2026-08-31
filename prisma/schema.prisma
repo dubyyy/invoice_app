@@ -33,6 +33,7 @@ model Invoice {
   salesRep      String?
   driverNumber  String?
   branch        String?
+  unit          String?
   taxRate       Float    @default(0)
   items         Json
   createdAt     DateTime @default(now())

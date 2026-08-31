@@ -33,6 +33,7 @@ export interface Invoice {
   salesRep: string;
   driverNumber?: string;
   branch?: string;
+  unit?: string;
   taxRate: number;
   items: LineItem[];
   createdAt: string;
