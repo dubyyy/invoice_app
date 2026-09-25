@@ -55,9 +55,9 @@ export default function HistoryPage() {
   }, [fetchInvoices]);
 
   const filtered = invoices.filter((inv) =>
-    inv.quoteNumber.toLowerCase().includes(search.toLowerCase()) ||
-    inv.customerName.toLowerCase().includes(search.toLowerCase()) ||
-    inv.vehicleModel.toLowerCase().includes(search.toLowerCase())
+    (inv.quoteNumber || '').toLowerCase().includes(search.toLowerCase()) ||
+    (inv.customerName || '').toLowerCase().includes(search.toLowerCase()) ||
+    (inv.vehicleModel || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const calculateSubtotal = (items: LineItem[]) => {

@@ -576,7 +576,8 @@ export default function CreateInvoicePage() {
 
   return (
     <div className="space-y-6">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           body * {
             visibility: hidden;
