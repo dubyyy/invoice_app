@@ -832,7 +832,6 @@ export default function CreateInvoicePage() {
                           >
                             <option value="">Pick from price list…</option>
                             {prices
-                              .filter((p) => !p.vehicleModel || p.vehicleModel.toLowerCase() === vehicleModel.toLowerCase())
                               .map((p) => (
                                 <option key={p.id} value={p.id}>
                                   {p.itemName} — {formatCurrency(p.unitPrice)} {p.vehicleModel ? `(${p.vehicleModel})` : ''}
