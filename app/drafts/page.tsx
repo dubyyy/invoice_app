@@ -23,6 +23,9 @@ interface DraftItem {
   validity: string;
   paymentTerms: string;
   salesRep: string;
+  driverNumber: string;
+  branch: string;
+  unit: string;
   taxRate: number;
   items: Array<{ id: string; description: string; quantity: number; unitPrice: number }>;
   attachedPdfName: string | null;
@@ -60,6 +63,9 @@ export default function DraftsPage() {
                 validity: parsed.validity || '',
                 paymentTerms: parsed.paymentTerms || '',
                 salesRep: parsed.salesRep || '',
+                driverNumber: parsed.driverNumber || '',
+                branch: parsed.branch || '',
+                unit: parsed.unit || '',
                 taxRate: parsed.taxRate ?? 7.5,
                 items: parsed.items || [],
                 attachedPdfName: parsed.attachedPdfName || null,
